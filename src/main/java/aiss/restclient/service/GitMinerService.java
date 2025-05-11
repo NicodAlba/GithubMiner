@@ -74,7 +74,14 @@ public class GitMinerService {
 
             GitMinerUser assignee = null;
             if(issue.getAssignee() != null) {
-                User assigneeUser = (User) issue.getAssignee();
+                Object assigneeObj = issue.getAssignee();
+                User assigneeUser;
+                if (assigneeObj instanceof User) {
+                    assigneeUser = (User) assigneeObj;
+                } else {
+                    // Convert LinkedHashMap to User
+                    assigneeUser = new com.fasterxml.jackson.databind.ObjectMapper().convertValue(assigneeObj, User.class);
+                }
                 assignee = new GitMinerUser(
                         assigneeUser.getNodeId(),
                         assigneeUser.getLogin(),
@@ -83,7 +90,6 @@ public class GitMinerService {
                         assigneeUser.getHtmlUrl()
                 );
             }
-
             GitMinerIssue gIssue = new GitMinerIssue(
                     issue.getNumber().toString(),
                     issue.getTitle(),
