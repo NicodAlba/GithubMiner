@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -79,7 +81,7 @@ class ProjectServiceTest {
     @Test
     @DisplayName("Get Issues")
     void getIssues() {
-        Issue[] issues = projectService.getIssueList("linebender", "vello");
+        List<Issue> issues = projectService.getIssueList("linebender", "vello");
         assertNotNull(issues);
         for (Issue issue : issues) {
             System.out.println("\nIssue #" + issue.getNumber());
@@ -116,8 +118,10 @@ class ProjectServiceTest {
     @Test
     @DisplayName("Get Comments")
     void getComments() {
-        Comment[] comments = projectService.getCommentList("linebender", "vello");
+        // Using issue #685 which has 10 comments
+        List<Comment> comments = projectService.getCommentList("linebender", "vello", "685");
         assertNotNull(comments);
+        System.out.println("Number of comments found: " + comments.size());
         for (Comment comment : comments) {
             System.out.println("\nComment #" + comment.getId());
             System.out.println("URL: " + comment.getUrl());
@@ -131,6 +135,44 @@ class ProjectServiceTest {
             System.out.println("Body: " + comment.getBody());
             System.out.println("Reactions: " + comment.getReactions());
             System.out.println("Performed Via GitHub App: " + comment.getPerformedViaGithubApp());
+        }
+    }
+
+    @Test
+    @DisplayName("Get Commit List")
+    void getCommitList() {
+        List<Commit> commits = projectService.getCommitList("linebender", "vello");
+        assertNotNull(commits);
+        assertFalse(commits.isEmpty());
+        for (Commit commit : commits) {
+            System.out.println("Sha: " + commit.getSha());
+            System.out.println("Node ID: " + commit.getNodeId());
+            System.out.println("Commit: " + commit.getCommit());
+            System.out.println("Url: " + commit.getUrl());
+            System.out.println("Html Url: " + commit.getHtmlUrl());
+            System.out.println("Comments Url: " + commit.getCommentsUrl());
+            System.out.println("Author: " + commit.getAuthor());
+            System.out.println("Committer: " + commit.getCommitter());
+            System.out.println("Parents: " + commit.getParents());
+        }
+    }
+
+    @Test
+    @DisplayName("Get Commit List with Since Parameter")
+    void getCommitListWithSince() {
+        List<Commit> commits = projectService.getCommitList("linebender", "vello", 7);
+        assertNotNull(commits);
+        assertFalse(commits.isEmpty());
+        for (Commit commit : commits) {
+            System.out.println("Sha: " + commit.getSha());
+            System.out.println("Node ID: " + commit.getNodeId());
+            System.out.println("Commit: " + commit.getCommit());
+            System.out.println("Url: " + commit.getUrl());
+            System.out.println("Html Url: " + commit.getHtmlUrl());
+            System.out.println("Comments Url: " + commit.getCommentsUrl());
+            System.out.println("Author: " + commit.getAuthor());
+            System.out.println("Committer: " + commit.getCommitter());
+            System.out.println("Parents: " + commit.getParents());
         }
     }
 }

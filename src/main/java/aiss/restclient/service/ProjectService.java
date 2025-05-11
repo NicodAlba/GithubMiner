@@ -13,9 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProjectService {
@@ -45,50 +48,76 @@ public class ProjectService {
         return response.getBody();
     }
 
-    public Issue[] getIssueList(String user, String project){
-        String baseUri = "https://api.github.com/repos/"+user
-                +"/"+project+"/issues";
+    public List<Commit> getCommitList(String user, String project) {
+        String uri = "https://api.github.com/repos/"+user+"/"+project+"/commits";
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Commit[]> request = new HttpEntity<>(null, headers);
+        
+        ResponseEntity<Commit[]> response = restTemplate.exchange(uri, HttpMethod.GET, 
+                request, Commit[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+    }
+
+    public List<Commit> getCommitList(String user, String project, Integer sinceCommits) {
+        // Calculate the date X days ago (default to 2 if sinceCommits is null)
+        int days = (sinceCommits != null) ? sinceCommits : 2;
+        LocalDateTime sinceDate = LocalDateTime.now().minusDays(days);
+        String sinceDateStr = sinceDate.format(DateTimeFormatter.ISO_DATE_TIME);
+        
+        String uri = "https://api.github.com/repos/"+user+"/"+project+"/commits?since=" + sinceDateStr;
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Commit[]> request = new HttpEntity<>(null, headers);
+        
+        ResponseEntity<Commit[]> response = restTemplate.exchange(uri, HttpMethod.GET, 
+                request, Commit[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+    }
+
+    public List<Issue> getIssueList(String user, String project) {
+        String uri = "https://api.github.com/repos/"+user+"/"+project+"/issues?per_page=100&page=1";
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Issue[]> request = new HttpEntity<>(null, headers);
         
-        String uri = baseUri + "?per_page=100&page=1";
-        ResponseEntity<Issue[]> response = restTemplate.exchange(uri, HttpMethod.GET, request, Issue[].class);
-        List<Issue> allIssues = new ArrayList<>(Arrays.asList(response.getBody()));
+        ResponseEntity<Issue[]> response = restTemplate.exchange(uri, HttpMethod.GET, 
+                request, Issue[].class);
+        List<Issue> result = new ArrayList<>(Arrays.asList(Objects.requireNonNull(response.getBody())));
         
-        int page = 2;
-        while (response.getBody() != null && response.getBody().length == 100) {
-            uri = baseUri + "?per_page=100&page=" + page;
-            response = restTemplate.exchange(uri, HttpMethod.GET, request, Issue[].class);
-            if (response.getBody() != null) {
-                allIssues.addAll(Arrays.asList(response.getBody()));
+        if (response.getBody() != null && response.getBody().length == 100) {
+            int page = 2;
+            while (true) {
+                String newUri = "https://api.github.com/repos/"+user+"/"+project+"/issues?per_page=100&page=" + page;
+                response = restTemplate.exchange(newUri, HttpMethod.GET, request, Issue[].class);
+                if (response.getBody() == null || response.getBody().length == 0) {
+                    break;
+                }
+                result.addAll(Arrays.asList(response.getBody()));
+                page++;
             }
-            page++;
         }
-        
-        return allIssues.toArray(new Issue[0]);
+        return result;
     }
 
-    public Comment[] getCommentList(String user, String project){
-        String baseUri = "https://api.github.com/repos/"+user
-                +"/"+project+"/issues/comments";
+    public List<Comment> getCommentList(String user, String project, String issueId) {
+        String uri = "https://api.github.com/repos/"+user+"/"+project+"/issues/"+issueId+"/comments?per_page=100&page=1";
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Comment[]> request = new HttpEntity<>(null, headers);
         
-        String uri = baseUri + "?per_page=100&page=1";
-        ResponseEntity<Comment[]> response = restTemplate.exchange(uri, HttpMethod.GET, request, Comment[].class);
-        List<Comment> allComments = new ArrayList<>(Arrays.asList(response.getBody()));
+        ResponseEntity<Comment[]> response = restTemplate.exchange(uri, HttpMethod.GET, 
+                request, Comment[].class);
+        List<Comment> result = new ArrayList<>(Arrays.asList(Objects.requireNonNull(response.getBody())));
         
-        int page = 2;
-        while (response.getBody() != null && response.getBody().length == 100) {
-            uri = baseUri + "?per_page=100&page=" + page;
-            response = restTemplate.exchange(uri, HttpMethod.GET, request, Comment[].class);
-            if (response.getBody() != null) {
-                allComments.addAll(Arrays.asList(response.getBody()));
+        if (response.getBody() != null && response.getBody().length == 100) {
+            int page = 2;
+            while (true) {
+                String newUri = "https://api.github.com/repos/"+user+"/"+project+"/issues/"+issueId+"/comments?per_page=100&page=" + page;
+                response = restTemplate.exchange(newUri, HttpMethod.GET, request, Comment[].class);
+                if (response.getBody() == null || response.getBody().length == 0) {
+                    break;
+                }
+                result.addAll(Arrays.asList(response.getBody()));
+                page++;
             }
-            page++;
         }
-        
-        return allComments.toArray(new Comment[0]);
+        return result;
     }
-
 }

@@ -39,7 +39,7 @@ public class Commit {
     @JsonProperty("comments_url")
     private String commentsUrl;
     @JsonProperty("author")
-    private Author__1 author;
+    private Author author;
     @JsonProperty("committer")
     private Committer__1 committer;
     @JsonProperty("parents")
@@ -106,12 +106,12 @@ public class Commit {
     }
 
     @JsonProperty("author")
-    public Author__1 getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
     @JsonProperty("author")
-    public void setAuthor(Author__1 author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 

@@ -1,27 +1,21 @@
-package aiss.restclient.model.GitMinerModels;
+package aiss.restclient.model.GitMiner;
 
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "body",
-        "created_at",
-        "updated_at"
-})
 public class GitMinerComment {
 
+    private String id;
     private String body;
     private String created_at;
     private String updated_at;
+    private GitMinerUser author;
 
-    public GitMinerComment( String body, String created_at, String updated_at) {
+    public GitMinerComment( String id, String body, String created_at, String updated_at, GitMinerUser author ) {
+
+        this.id = id;
         this.body = body;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.author = author;
+
     }
 
     public String getBody() {
@@ -42,7 +36,16 @@ public class GitMinerComment {
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
     }
+    public GitMinerUser getAuthor() {return author;}
+    public void setAuthor(GitMinerUser author) {this.author = author;}
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+
     public String toString() {
-        return "Comment:[body: " + body + ", created_at: " + created_at + ", updated_at: " + updated_at + "]";
+        return "Comment:[body: " + body +
+                ", created_at: " + created_at +
+                ", updated_at: " + updated_at +
+                ", author: " + author +"]";
     }
 }

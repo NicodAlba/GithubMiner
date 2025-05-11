@@ -1,26 +1,11 @@
-package aiss.restclient.model.GitMinerModels;
+package aiss.restclient.model.GitMiner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "title",
-        "description",
-        "state",
-        "created_at",
-        "updated_at",
-        "closed_at",
-        "labels",
-        "votes"
-})
-
 public class GitMinerIssue {
+
+    private String id;
     private String title;
     private String description;
     private String state;
@@ -29,8 +14,17 @@ public class GitMinerIssue {
     private String closed_at;
     private List<String> labels;
     private String votes;
+    private List<GitMinerComment> comments;
+    private GitMinerUser author;
+    private GitMinerUser assignee;
 
-    public GitMinerIssue(String title, String description, String state, String created_at, String updated_at, String closed_at, List<String> labels, String votes) {
+    public GitMinerIssue(String id, String title,
+                         String description, String state,
+                         String created_at, String updated_at,
+                         String closed_at, List<String> labels,
+                         String votes, List<GitMinerComment> comments,
+                         GitMinerUser author, GitMinerUser assignee) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.state = state;
@@ -39,6 +33,10 @@ public class GitMinerIssue {
         this.closed_at = closed_at;
         this.labels = labels;
         this.votes = votes;
+        this.comments = comments;
+        this.author = author;
+        this.assignee = assignee;
+
     }
 
     public String getTitle() {
@@ -89,9 +87,27 @@ public class GitMinerIssue {
     public void setVotes(String votes) {
         this.votes = votes;
     }
+    public List<GitMinerComment> getComments() { return new ArrayList<>(comments); }
+    public void setComments(List<GitMinerComment> comments) { this.comments = comments; }
+    public GitMinerUser getAuthor() { return author; }
+    public void setAuthor(GitMinerUser author) { this.author = author; }
+    public GitMinerUser getAssignee() { return assignee; }
+    public void setAssignee(GitMinerUser assignee) { this.assignee = assignee; }
+    public String  getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public String toString() {
-        return "Issue:[title " + title + " description " + description + " state " + state + " created_at " + created_at + " updated_at " + updated_at + " closed_at " + closed_at + " votes " + votes + "]";
+        return "Issue:[title " + title +
+                " description " + description +
+                " state " + state +
+                " created_at " + created_at +
+                " updated_at " + updated_at +
+                " closed_at " + closed_at +
+                " votes " + votes +
+                " comments " + comments +
+                " author " + author +
+                " assignee " + assignee +
+                " id " + id +"]";
     }
 
 }

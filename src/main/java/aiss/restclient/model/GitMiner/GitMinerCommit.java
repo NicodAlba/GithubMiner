@@ -1,20 +1,8 @@
-package aiss.restclient.model.GitMinerModels;
+package aiss.restclient.model.GitMiner;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "title",
-        "message",
-        "author_name",
-        "author_email",
-        "authored_date",
-        "web_url"
-})
 public class GitMinerCommit {
+
+    private String id;
     private String title;
     private String message;
     private String author_name;
@@ -22,13 +10,17 @@ public class GitMinerCommit {
     private String authored_date;
     private String web_url;
 
-    public GitMinerCommit( String title, String message, String author_name, String author_email, String authored_date, String web_url) {
+    public GitMinerCommit(String id,String title, String message,
+                           String author_name, String author_email,
+                           String authored_date, String web_url) {
+        this.id = id;
         this.title = title;
         this.message = message;
         this.author_name = author_name;
         this.author_email = author_email;
         this.authored_date = authored_date;
         this.web_url = web_url;
+
     }
 
     public String getTitle() {
@@ -67,8 +59,16 @@ public class GitMinerCommit {
     public void setWeb_url(String web_url) {
         this.web_url = web_url;
     }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public String toString() {
-        return "Commit [title=" + title + ", message=" + message + ", author_name=" + author_name + ", author_email=" + author_email + ", authored_date=" + authored_date + ", web_url=" + web_url + "]";
+        return "Commit [title=" + title +
+                ", message=" + message +
+                ", author_name=" + author_name +
+                ", author_email=" + author_email +
+                ", authored_date=" + authored_date +
+                ", web_url=" + web_url +
+                ", id=" + id + "]";
     }
 }
